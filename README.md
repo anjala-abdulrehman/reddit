@@ -20,4 +20,8 @@ Architecture FlowChart
 
 ![img_1.png](img_1.png)!
 
+### How to run ?
+
+``make up`` <br>
+``make job``
 
