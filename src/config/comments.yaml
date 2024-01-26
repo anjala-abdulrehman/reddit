@@ -1,0 +1,16 @@
+- name: comment_id
+  type: varchar
+- name: author
+  type: varchar
+- name: score
+  type: float
+- name: created_utc
+  type: float
+- name: is_submitter
+  type: VARCHAR
+- name: distinguished
+  type: bool
+- name: edited
+  type: varchar
+- name: replies
+  type: int

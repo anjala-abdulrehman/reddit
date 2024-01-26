@@ -1,0 +1,65 @@
+version: "3.9"
+services:
+  # Flink job manager
+  jobmanager:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.flink
+      platforms:
+        - "linux/amd64"
+        - "linux/arm64"
+    image: ${IMAGE_NAME:-pyflink:1.16.0}
+    container_name: "${CONTAINER_PREFIX:-eczachly-flink}-jobmanager"
+    pull_policy: never
+    platform: "linux/amd64"
+    hostname: "jobmanager"
+    env_file:
+      - flink-env.env
+    expose:
+      - "6123"
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./:/opt/flink/usrlib
+      - ./keys/:/var/private/ssl/
+      - ./src/:/opt/src
+    command: jobmanager
+    extra_hosts:
+      - "host.docker.internal:127.0.0.1" #// Linux
+      - "host.docker.internal:host-gateway" #// Access services on the host machine from within the Docker container
+    environment:
+      - POSTGRES_URL=${POSTGRES_URL:-jdbc:postgresql://host.docker.internal:5434/postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager        
+
+  # Flink task manager
+  taskmanager:
+    image: ${IMAGE_NAME:-pyflink:1.16.0}
+    container_name: "${CONTAINER_PREFIX:-eczachly-flink}-taskmanager"
+    pull_policy: never
+    platform: "linux/amd64"
+    env_file:
+      - flink-env.env
+    expose:
+      - "6121"
+      - "6122"
+    volumes:
+      - ./:/opt/flink/usrlib
+      - ./keys/:/var/private/ssl/
+      - ./src/:/opt/src
+    depends_on:
+      - jobmanager
+    command: taskmanager --taskmanager.registration.timeout 5 min
+    extra_hosts:
+      - "host.docker.internal:127.0.0.1" #// Linux
+      - "host.docker.internal:host-gateway" #// Access services on the host machine from within the Docker container
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 15
+        parallelism.default: 3

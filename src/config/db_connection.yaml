@@ -1,0 +1,13 @@
+reddit:
+    description: Credentials for reddit db
+    username: 'mohammedsameer'
+    password: 'x)|0J8kAx/4)'
+    host: localhost
+    port: 5432
+
+reddit-stg:
+    description: Credentials for reddit stg db
+    username: 'mohammedsameer'
+    password: 'x)|0J8kAx/4)'
+    host: localhost
+    port: 5432
