@@ -21,7 +21,7 @@ RUN apt-get update -y && \
     rm -rf /var/lib/apt/lists/*
 
 # Create and activate virtual environment
-RUN pip install virtualenv && \
+RUN pip3 install virtualenv && \
     virtualenv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
